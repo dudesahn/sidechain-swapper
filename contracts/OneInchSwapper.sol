@@ -16,7 +16,7 @@ interface IAggregatorV5 {
         uint256 flags;
     }
 
-    function swap(address, SwapDescription memory, bytes32, bytes32) external;
+    function swap(address, SwapDescription calldata, bytes calldata, bytes calldata) external;
 }
 
 contract OneInchSwapper is Ownable {
@@ -36,7 +36,7 @@ contract OneInchSwapper is Ownable {
         address _destinationToken,
         uint256 _amountIn,
         uint256 _amountOut,
-        bytes32 _data
+        bytes calldata _data
     ) external onlyOwner {
         IERC20(_sourceToken).transferFrom(_strategy, address(this), _amountIn);
         IAggregatorV5.SwapDescription memory swapInfo = IAggregatorV5.SwapDescription(
@@ -48,8 +48,8 @@ contract OneInchSwapper is Ownable {
             _amountOut,
             0
         );
-
-        aggregatorV5.swap(executor, swapInfo, 0, _data);
+        bytes memory empty;
+        aggregatorV5.swap(executor, swapInfo, empty, _data);
     }
 
     function approveToken(address token, bool approve) external onlyOwner {
